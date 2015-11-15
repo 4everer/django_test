@@ -6,7 +6,8 @@ from blogengine.models import Post
 urlpatterns = patterns(
     '',
     # Index
-    url('^$', ListView.as_view(
+    url(r'^(?P<page>\d+)?/?$', ListView.as_view(
         model=Post,
-    )),
+        paginate_by=5,
+        )),
 )
