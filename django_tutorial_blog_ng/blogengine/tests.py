@@ -157,7 +157,7 @@ class AdminTest(LiveServerTestCase):
         response = self.client.post(
             '/admin/blogengine/post/{0}/delete/'.format(id_),
             {
-            'post': 'yes'
+                'post': 'yes'
             }, follow=True)
         self.assertEquals(response.status_code, 200)
         # Check deleted successfully
