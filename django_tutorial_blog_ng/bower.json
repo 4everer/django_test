@@ -1,0 +1,25 @@
+{
+  "name": "django_tutorial_blog_ng",
+  "homepage": "https://github.com/4everer/django_test",
+  "authors": [
+    "ksint <ever4everest@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "html5-boilerplate": "~5.2.0"
+  }
+}
