@@ -3,15 +3,18 @@ from django.utils import timezone
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from blogengine.models import Post
+from django.contrib.auth.models import User
 import markdown
-
 # Create your tests here.
 
 
 class PostTest(TestCase):
 
     def test_create_post(self):
-
+        # Create the author
+        author = User.objects.create_user(
+            'testuser', 'user@example.com', 'password')
+        author.save()
         # Create the post
         post = Post()
         # Set the attributes
@@ -19,6 +22,7 @@ class PostTest(TestCase):
         post.text = 'This is my first blog post'
         post.slug = 'my-first-post'
         post.pub_date = timezone.now()
+        post.author = author
         # Save it
         post.save()
         # Check we can find it
@@ -36,6 +40,8 @@ class PostTest(TestCase):
         self.assertEquals(only_post.pub_date.hour, post.pub_date.hour)
         self.assertEquals(only_post.pub_date.minute, post.pub_date.minute)
         self.assertEquals(only_post.pub_date.second, post.pub_date.second)
+        self.assertEquals(only_post.author.username, 'testuser')
+        self.assertEquals(only_post.author.email, 'user@example.com')
 
 
 class BaseAcceptanceTest(LiveServerTestCase):
@@ -49,19 +55,14 @@ class AdminTest(BaseAcceptanceTest):
     fixtures = ['users.json']
 
     def test_login(self):
-
         # Get login page
         response = self.client.get('/admin/', follow=True)
-
         # Check response code
         self.assertEquals(response.status_code, 200)
-
         # Check 'Log in' in response
         self.assertTrue('Log in' in response.content)
-
         # Log the user in
         self.client.login(username='admintest', password="admintest")
-
         # Check response code
         response_login = self.client.get('/admin/', follow=True)
         self.assertEquals(response_login.status_code, 200)
@@ -72,13 +73,11 @@ class AdminTest(BaseAcceptanceTest):
 
         # Log the user in
         self.client.login(username='admintest', password="admintest")
-
         # Check response code
         response_login = self.client.get('/admin/', follow=True)
         self.assertEquals(response_login.status_code, 200)
         # Check 'Log out' in response_login
         self.assertTrue('Log out' in response_login.content)
-
         # Log out
         self.client.logout()
         # Check response code
@@ -112,12 +111,17 @@ class AdminTest(BaseAcceptanceTest):
         self.assertEquals(len(all_posts), 1)
 
     def test_edit_post(self):
+        # Create the author
+        author = User.objects.create_user(
+            'testuser', 'user@example.com', 'password')
+        author.save()
         # Create the post
         post = Post()
         post.title = 'My first post'
         post.text = 'This is my first blog post'
         post.slug = 'my-first-post'
         post.pub_date = timezone.now()
+        post.author = author
         post.save()
         # Log in
         self.client.login(username='admintest', password="admintest")
@@ -147,12 +151,17 @@ class AdminTest(BaseAcceptanceTest):
         self.assertEquals(only_post.text, 'This is my second blog post')
 
     def test_delete_post(self):
+        # Create the author
+        author = User.objects.create_user(
+            'testuser', 'user@example.com', 'password')
+        author.save()
         # Create the post
         post = Post()
         post.title = 'My first post'
         post.text = 'This is my first blog post'
         post.slug = 'my-first-post'
         post.pub_date = timezone.now()
+        post.author = author
         post.save()
         # Check new post saved
         all_posts = Post.objects.all()
@@ -178,12 +187,17 @@ class AdminTest(BaseAcceptanceTest):
 class PostViewTest(BaseAcceptanceTest):
 
     def test_index(self):
+        # Create the author
+        author = User.objects.create_user(
+            'testuser', 'user@example.com', 'password')
+        author.save()
         # Create the post
         post = Post()
         post.title = 'My first post'
         post.text = 'This is [my first blog post](http://127.0.0.1:8000/)'
         post.slug = 'my-first-post'
         post.pub_date = timezone.now()
+        post.author = author
         post.save()
 
         # Check new post saved
@@ -209,12 +223,17 @@ class PostViewTest(BaseAcceptanceTest):
             '<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
 
     def test_post_page(self):
+        # Create the author
+        author = User.objects.create_user(
+            'testuser', 'user@example.com', 'password')
+        author.save()
         # Create the post
         post = Post()
         post.title = 'My first post'
         post.text = 'This is [my first blog post](http://127.0.0.1:8000/)'
         post.slug = 'my-first-post'
         post.pub_date = timezone.now()
+        post.author = author
         post.save()
         # Check new post saved
         all_posts = Post.objects.all()
