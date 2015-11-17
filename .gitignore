@@ -3,3 +3,6 @@ venv/
 db.sqlite3
 blogengine/static/bower_components/
 testResult.html
+reports/
+htmlcov/
+
