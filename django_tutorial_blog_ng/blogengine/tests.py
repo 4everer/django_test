@@ -4,7 +4,7 @@ from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from blogengine.models import Post, Category
 from django.contrib.auth.models import User
-import markdown
+import markdown2
 # Create your tests here.
 
 
@@ -352,7 +352,7 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the post title is in the response
         self.assertTrue(post.title in response.content)
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.text) in response.content)
+        self.assertTrue(markdown2.markdown(post.text) in response.content)
 
         # Check the post category is in the response
         self.assertTrue(post.category.name in response.content)
@@ -400,7 +400,7 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the post title is in the response
         self.assertTrue(post.title in response.content)
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.text) in response.content)
+        self.assertTrue(markdown2.markdown(post.text) in response.content)
 
         # Check the post category is in the response
         self.assertTrue(post.category.name in response.content)
@@ -451,7 +451,7 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the category name is in the response
         self.assertTrue(post.category.name in response.content)
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.text) in response.content)
+        self.assertTrue(markdown2.markdown(post.text) in response.content)
         # Check the post date is in the response
         self.assertTrue(str(post.pub_date.year) in response.content)
         self.assertTrue(post.pub_date.strftime('%b') in response.content)
