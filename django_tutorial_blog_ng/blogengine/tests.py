@@ -36,6 +36,12 @@ class PostTest(TestCase):
         category.description = 'The Python programming language'
         category.save()
 
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
         # Create the author
         author = User.objects.create_user(
             'testuser', 'user@example.com', 'password')
@@ -49,6 +55,7 @@ class PostTest(TestCase):
         post.pub_date = timezone.now()
         post.author = author
         post.category = category
+        post.site = site
 
         # Save it
         post.save()
@@ -61,6 +68,8 @@ class PostTest(TestCase):
         self.assertEquals(only_post.title, 'My first post')
         self.assertEquals(only_post.text, 'This is my first blog post')
         self.assertEquals(only_post.slug, 'my-first-post')
+        self.assertEquals(only_post.site.name, 'example.com')
+        self.assertEquals(only_post.site.domain, 'example.com')
         self.assertEquals(only_post.pub_date.day, post.pub_date.day)
         self.assertEquals(only_post.pub_date.month, post.pub_date.month)
         self.assertEquals(only_post.pub_date.year, post.pub_date.year)
@@ -140,6 +149,7 @@ class AdminTest(BaseAcceptanceTest):
             'pub_date_1': '22:00:04',
             'slug': 'my-first-post',
             'category': str(cate_id),
+            'site': '1'
         },
             follow=True
         )
@@ -160,6 +170,12 @@ class AdminTest(BaseAcceptanceTest):
         category.description = 'The Python programming language'
         category.save()
 
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
         # Create the author
         author = User.objects.create_user(
             'testuser', 'user@example.com', 'password')
@@ -172,6 +188,7 @@ class AdminTest(BaseAcceptanceTest):
         post.pub_date = timezone.now()
         post.author = author
         post.category = category
+        post.site = site
         post.save()
         # Log in
         self.client.login(username='admintest', password="admintest")
@@ -187,7 +204,8 @@ class AdminTest(BaseAcceptanceTest):
                 'pub_date_0': '2013-12-28',
                 'pub_date_1': '22:00:04',
                 'slug': 'my-second-post',
-                'category': str(cate_id)
+                'category': str(cate_id),
+                'site': '1'
             },
             follow=True
         )
@@ -210,6 +228,12 @@ class AdminTest(BaseAcceptanceTest):
         category.description = 'The Python programming language'
         category.save()
 
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
         # Create the author
         author = User.objects.create_user(
             'testuser', 'user@example.com', 'password')
@@ -222,6 +246,7 @@ class AdminTest(BaseAcceptanceTest):
         post.pub_date = timezone.now()
         post.author = author
         post.category = category
+        post.site = site
         post.save()
 
         # Check new post saved
@@ -327,6 +352,12 @@ class PostViewTest(BaseAcceptanceTest):
         category.description = 'The Python programming language'
         category.save()
 
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
         # Create the author
         author = User.objects.create_user(
             'testuser', 'user@example.com', 'password')
@@ -339,6 +370,7 @@ class PostViewTest(BaseAcceptanceTest):
         post.pub_date = timezone.now()
         post.author = author
         post.category = category
+        post.site = site
         post.save()
 
         # Check new post saved
@@ -374,6 +406,12 @@ class PostViewTest(BaseAcceptanceTest):
         category.description = 'The Python programming language'
         category.save()
 
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
         # Create the author
         author = User.objects.create_user(
             'testuser', 'user@example.com', 'password')
@@ -386,7 +424,9 @@ class PostViewTest(BaseAcceptanceTest):
         post.pub_date = timezone.now()
         post.author = author
         post.category = category
+        post.site = site
         post.save()
+
         # Check new post saved
         all_posts = Post.objects.all()
         self.assertEquals(len(all_posts), 1)
@@ -418,6 +458,13 @@ class PostViewTest(BaseAcceptanceTest):
         category.name = 'python'
         category.description = 'The Python programming language'
         category.save()
+
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
         # Create the author
         author = User.objects.create_user(
             'testuser', 'user@example.com', 'password')
@@ -434,7 +481,7 @@ class PostViewTest(BaseAcceptanceTest):
         post.slug = 'my-first-post'
         post.pub_date = timezone.now()
         post.author = author
-        # post.site = site
+        post.site = site
         post.category = category
         post.save()
 
@@ -443,6 +490,7 @@ class PostViewTest(BaseAcceptanceTest):
         self.assertEquals(len(all_posts), 1)
         only_post = all_posts[0]
         self.assertEquals(only_post, post)
+
         # Get the category URL
         category_url = post.category.get_absolute_url()
         # Fetch the category
@@ -450,15 +498,34 @@ class PostViewTest(BaseAcceptanceTest):
         self.assertEquals(response.status_code, 200)
         # Check the category name is in the response
         self.assertTrue(post.category.name in response.content)
+
         # Check the post text is in the response
         self.assertTrue(markdown2.markdown(post.text) in response.content)
         # Check the post date is in the response
         self.assertTrue(str(post.pub_date.year) in response.content)
         self.assertTrue(post.pub_date.strftime('%b') in response.content)
         self.assertTrue(str(post.pub_date.day) in response.content)
+
         # Check the link is marked up properly
         self.assertTrue(
             '<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
+
+    # def test_create_tag(self):
+    #     # Create the tag
+    #     tag = Tag()
+    #     # Add attributes
+    #     tag.name = 'python'
+    #     tag.description = 'The Python programming language'
+    #     # Save it
+    #     tag.save()
+    #     # Check we can find it
+    #     all_tags = Tag.objects.all()
+    #     self.assertEquals(len(all_tags), 1)
+    #     only_tag = all_tags[0]
+    #     self.assertEquals(only_tag, tag)
+    #     # Check attributes
+    #     self.assertEquals(only_tag.name, 'python')
+    #     self.assertEquals(only_tag.description, 'The Python programming language')
 
 
 class FlatPageViewTest(BaseAcceptanceTest):
