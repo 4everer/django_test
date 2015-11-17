@@ -80,7 +80,7 @@ TEMPLATES = [
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
 )
-#settings
+# settings
 # Django Suit configuration example
 SUIT_CONFIG = {
     # header
@@ -98,7 +98,7 @@ SUIT_CONFIG = {
     #    'sites': 'icon-leaf',
     #    'auth': 'icon-lock',
     # },
-    'MENU_OPEN_FIRST_CHILD': False, # Default True
+    'MENU_OPEN_FIRST_CHILD': False,  # Default True
     # 'MENU_EXCLUDE': ('auth.group',),
     # 'MENU': (
     #     'sites',
@@ -119,10 +119,17 @@ WSGI_APPLICATION = 'django_tutorial_blog_ng.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.',
+        'NAME': '',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Internationalization
@@ -154,3 +161,20 @@ JENKINS_TASKS = (
     # deprecated, use python manage.py jenkins --enable-coverage
 )
 PROJECT_APPS = ['blogengine']
+
+
+# Heroku config
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+
+
+DATABASES['default'] = dj_database_url.config(default="sqlite:///db.sqlite3")
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+# Static asset configuration
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
