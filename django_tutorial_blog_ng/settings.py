@@ -84,7 +84,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 # Django Suit configuration example
 SUIT_CONFIG = {
     # header
-    # 'ADMIN_NAME': 'Django Suit',
+    'ADMIN_NAME': 'Control Panel',
     # 'HEADER_DATE_FORMAT': 'l, j. F Y',
     # 'HEADER_TIME_FORMAT': 'H:i',
 
