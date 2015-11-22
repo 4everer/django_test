@@ -186,6 +186,7 @@ class AdminTest(BaseAcceptanceTest):
         # Create the new post
         cate_id = Category.objects.all()[0].id
         tags_id = Tag.objects.all()[0].id
+        site_id = Site.objects.all()[0].id
         response = self.client.post('/admin/blogengine/post/add/', {
             'title': 'My first post',
             'text': 'This is my first post',
@@ -193,7 +194,7 @@ class AdminTest(BaseAcceptanceTest):
             'pub_date_1': '22:00:04',
             'slug': 'my-first-post',
             'category': str(cate_id),
-            'site': '1',
+            'site': str(site_id),
             'tags': str(tags_id),
         },
             follow=True
@@ -250,6 +251,7 @@ class AdminTest(BaseAcceptanceTest):
         id_ = Post.objects.all()[0].id
         cate_id = Category.objects.all()[0].id
         tags_id = Tag.objects.all()[0].id
+        site_id = Site.objects.all()[0].id
         # Edit the post
         response = self.client.post(
             '/admin/blogengine/post/{0}/'.format(id_),
@@ -260,7 +262,7 @@ class AdminTest(BaseAcceptanceTest):
                 'pub_date_1': '22:00:04',
                 'slug': 'my-second-post',
                 'category': str(cate_id),
-                'site': '1',
+                'site': str(site_id),
                 'tags': str(tags_id),
             },
             follow=True
@@ -478,6 +480,42 @@ class AdminTest(BaseAcceptanceTest):
         # Check tag deleted
         all_tags = Tag.objects.all()
         self.assertEquals(len(all_tags), 0)
+
+    def test_create_post_without_tag(self):
+        # Create the category
+        category = Category()
+        category.name = 'python'
+        category.description = 'The Python programming language'
+        category.save()
+        # Log in
+        self.client.login(username='admintest', password="admintest")
+        # Check response code
+        response = self.client.get('/admin/blogengine/post/add/', follow=True)
+        self.assertEquals(response.status_code, 200)
+
+        # id_ = Post.objects.all()[0].id
+        cate_id = Category.objects.all()[0].id
+        # tags_id = Tag.objects.all()[0].id
+        site_id = Site.objects.all()[0].id
+
+        # Create the new post
+        response = self.client.post('/admin/blogengine/post/add/', {
+            'title': 'My first post',
+            'text': 'This is my first post',
+            'pub_date_0': '2013-12-28',
+            'pub_date_1': '22:00:04',
+            'slug': 'my-first-post',
+            'site': str(site_id),
+            'category': str(cate_id)
+        },
+            follow=True
+        )
+        self.assertEquals(response.status_code, 200)
+        # Check added successfully
+        self.assertTrue('added successfully' in response.content)
+        # Check new post now in database
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
 
 
 class PostViewTest(BaseAcceptanceTest):
